@@ -37,6 +37,28 @@ ol, ul {
 	list-style: none;
 }
 
+.btn {
+	-webkit-border-radius: 8;
+	-moz-border-radius: 8;
+	border-radius: 8px;
+	font-family: Georgia;
+	color: #ffffff;
+	font-size: 25px;
+	background: #a67dfa;
+	padding: 10px 20px 10px 20px;
+	text-decoration: none;
+  }
+  
+  .btn:hover {
+	background: #af8cfa;
+	background-image: -webkit-linear-gradient(top, #af8cfa, #8f5ff5);
+	background-image: -moz-linear-gradient(top, #af8cfa, #8f5ff5);
+	background-image: -ms-linear-gradient(top, #af8cfa, #8f5ff5);
+	background-image: -o-linear-gradient(top, #af8cfa, #8f5ff5);
+	background-image: linear-gradient(to bottom, #af8cfa, #8f5ff5);
+	text-decoration: none;
+  }
+
 blockquote, q {
 	quotes: none;
 }
