@@ -59,6 +59,21 @@ ol, ul {
 	text-decoration: none;
   }
 
+  .btn2 {
+
+	-webkit-border-radius: 8;
+	-moz-border-radius: 8;
+	border-radius: 8px;
+	font-family: Georgia;
+	color: #ffffff;
+	font-size: 1px;
+	background: #ffffff;
+	text-decoration: none;
+  }
+  .btn2:hover {
+	background: #ffffff;
+  }
+
 blockquote, q {
 	quotes: none;
 }
