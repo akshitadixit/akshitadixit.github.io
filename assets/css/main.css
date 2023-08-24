@@ -48,7 +48,7 @@ ol, ul {
 	padding: 10px 20px 10px 20px;
 	text-decoration: none;
   }
-  
+
   .btn:hover {
 	background: #af8cfa;
 	background-image: -webkit-linear-gradient(top, #af8cfa, #8f5ff5);
@@ -1999,8 +1999,9 @@ input, select, textarea {
 			transition: opacity 0.25s ease-in-out;
 			margin-bottom: 0;
 			position: relative;
-			padding: 3.5em 2.5em 2.5em 2.5em;
+			padding: 2.5em 2.5em 2.5em 2.5em;
 			width: 100%;
+			height: 50%;
 		}
 
 			#main > .panel.inactive {
@@ -2010,14 +2011,14 @@ input, select, textarea {
 			@media screen and (max-width: 736px) {
 
 				#main > .panel {
-					padding: 2em 1.5em 1.5em 1.5em;
+					padding: 1.5em 1.5em 1.5em 1.5em;
 				}
 
 			}
 
 			#main > .panel.intro {
 				padding: 0;
-				height: 20em;
+				height: 25em;
 				display: -moz-flex;
 				display: -webkit-flex;
 				display: -ms-flex;
@@ -2128,8 +2129,9 @@ input, select, textarea {
 				}
 
 					#main > .panel.intro header h1 {
-						line-height: 1.25em;
+						line-height: 1.15em;
 						margin-bottom: 0;
+						font-weight: bold;
 					}
 
 					#main > .panel.intro header p {
@@ -2226,3 +2228,47 @@ input, select, textarea {
 			}
 
 		}
+
+/* Adjust the styling for the images */
+.collage-item img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	object-position: center;
+	transition: transform 0.3s ease-out;
+}
+
+.popup {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+  }
+
+  .popup-content {
+	position: relative;
+	max-width: 90%;
+	max-height: 90%;
+	overflow: auto;
+  }
+
+  .popup-close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	color: white;
+	cursor: pointer;
+	font-size: 24px;
+  }
+
+  .popup-img {
+	width: 100%;
+	height: auto;
+  }
+
