@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Find your first open source project · Akshita Dixit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300..900&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+@property --accent { syntax: '<color>'; inherits: true; initial-value: #6750A4; }
+:root {
+  --accent: #6750A4; --bg: #FFFBFE; --surface: #fff; --on: #1C1B1F; --muted: #625B71;
+  --outline: #E7E0EC; --radius: 28px; --ok: #1E8E3E;
+  transition: --accent .8s ease;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body { font-family: 'Roboto Flex', system-ui, sans-serif; background: var(--bg); color: var(--on); overflow: hidden; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+.ms { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; display: inline-block; white-space: nowrap; letter-spacing: normal; text-transform: none; direction: ltr; font-feature-settings: 'liga'; font-variation-settings: 'FILL' 1; }
+
+/* chrome */
+.blob { position: fixed; width: 50vmax; height: 50vmax; border-radius: 50%; filter: blur(90px); opacity: .22; z-index: -1; background: var(--accent); animation: drift 18s ease-in-out infinite alternate; }
+.b1 { top: -22vmax; right: -16vmax; }
+.b2 { bottom: -26vmax; left: -16vmax; background: color-mix(in oklab, var(--accent), #00BCD4 55%); animation-delay: -9s; }
+@keyframes drift { to { transform: translate(-6vmax, 6vmax) scale(1.12); } }
+.progress { position: fixed; inset: 0 0 auto; height: 4px; z-index: 10; }
+.progress span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 0 4px 4px 0; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.ctrl { position: fixed; right: 24px; bottom: 20px; z-index: 10; display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 99px; background: color-mix(in oklab, var(--surface) 75%, transparent); backdrop-filter: blur(12px); box-shadow: 0 4px 20px -6px rgba(0,0,0,.18); }
+.fab { width: 44px; height: 44px; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; position: relative; overflow: hidden; color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, white); }
+#count { font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; padding: 0 6px; }
+.brand { position: fixed; left: 24px; bottom: 30px; z-index: 10; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.brand .ms { font-size: 20px; color: var(--accent); }
+
+/* slides */
+.slide { position: fixed; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: clamp(28px, 5vw, 72px) clamp(20px, 6vw, 96px) 96px; visibility: hidden; opacity: 0; scale: .98; transition: opacity .5s, scale .5s, visibility 0s .5s; }
+.slide.active { visibility: visible; opacity: 1; scale: 1; transition: opacity .5s, scale .5s; }
+.inner { width: min(1180px, 100%); }
+h1 { font-size: clamp(42px, 6.5vw, 88px); line-height: 1.02; font-weight: 800; letter-spacing: -.035em; }
+h2 { font-size: clamp(32px, 4.6vw, 60px); line-height: 1.05; font-weight: 750; letter-spacing: -.025em; margin-bottom: 10px; }
+h3 { font-size: 20px; margin-bottom: 4px; }
+.lead { font-size: clamp(16px, 1.6vw, 22px); color: var(--muted); max-width: 56ch; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; margin-bottom: 18px; border-radius: 99px; font-weight: 700; font-size: 14px; color: var(--accent); background: color-mix(in oklab, var(--accent) 13%, white); }
+.kicker .ms { font-size: 18px; }
+.grad { background: linear-gradient(90deg, var(--accent), #E91E63 55%, #FF9800); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.muted { color: var(--muted); }
+.foot { margin-top: 28px; font-size: 15px; color: var(--muted); }
+.foot a { color: var(--accent); font-weight: 600; }
+kbd { font: 600 12px 'Roboto Mono', monospace; padding: 3px 7px; margin-right: 4px; border-radius: 6px; background: var(--surface); border: 1px solid var(--outline); }
+
+/* enter animations */
+.slide [data-anim] { opacity: 0; }
+.slide.active [data-anim] { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 80ms + 120ms); }
+.slide.active [data-anim=pop] { animation-name: pop; }
+@keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: none; } }
+
+/* components */
+.grid { display: grid; gap: 20px; }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+.two { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+.card { position: relative; overflow: hidden; padding: 24px; border-radius: var(--radius); background: var(--surface); color: var(--on); text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px -10px color-mix(in oklab, var(--accent) 45%, transparent); transition: translate .25s, box-shadow .25s; }
+a.card:hover, .lift:hover { translate: 0 -5px; box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 18px 36px -12px color-mix(in oklab, var(--accent) 60%, transparent); }
+.card p, .card small { color: var(--muted); font-size: 15px; }
+.icon { width: 56px; height: 56px; margin-bottom: 18px; border-radius: 18px; display: grid; place-items: center; color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, white); transition: border-radius .4s; }
+.card:hover .icon { border-radius: 50%; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 99px; border: 1px solid var(--outline); background: var(--surface); color: var(--on); font: 600 14px 'Roboto Flex', sans-serif; text-decoration: none; cursor: pointer; transition: background .2s, color .2s, border-color .2s, translate .2s; }
+a.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chips .chip[aria-pressed=true]::before { content: 'check'; font-family: 'Material Symbols Rounded'; font-size: 18px; margin-left: -4px; }
+.btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border: 0; border-radius: 99px; background: var(--accent); color: #fff; font: 700 16px 'Roboto Flex', sans-serif; text-decoration: none; cursor: pointer; box-shadow: 0 8px 20px -8px var(--accent); transition: translate .2s; }
+.btn:hover { translate: 0 -2px; }
+.ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .25; transform: scale(0); pointer-events: none; animation: ripple .6s ease-out forwards; }
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+/* 1: hero */
+.byline { display: flex; align-items: center; gap: 14px; margin-top: 36px; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--accent), #E91E63); }
+.byline a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.hint { margin-top: 40px; font-size: 13px; color: var(--muted); }
+.hero { width: 100%; max-width: 520px; overflow: visible; animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { translate: 0 -12px; } }
+.hero path { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1 2; stroke-dashoffset: 1; }
+.slide.active .hero path { animation: draw 1.2s cubic-bezier(.6,0,.2,1) var(--d, 0s) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.hero circle { fill: #fff; stroke-width: 5; transform-box: fill-box; transform-origin: center; scale: 0; }
+.slide.active .hero circle { animation: popin .45s cubic-bezier(.3,1.6,.5,1) var(--d, 0s) forwards; }
+@keyframes popin { to { scale: 1; } }
+.hero .end { fill: var(--accent); }
+.hero .ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+.slide.active .hero .ring { animation: ring 2s 2.2s infinite; }
+@keyframes ring { from { scale: 1; opacity: 1; } to { scale: 3.2; opacity: 0; } }
+.hero text { font: 700 14px 'Roboto Flex', sans-serif; opacity: 0; }
+.slide.active .hero text { animation: fade .5s var(--d) forwards; }
+@keyframes fade { to { opacity: 1; } }
+
+/* 3: funnel */
+.flow { display: flex; align-items: flex-start; margin-top: 44px; }
+.node { flex: none; width: 160px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.bubble { width: 96px; height: 96px; margin-bottom: 10px; border-radius: 32px; display: grid; place-items: center; color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, white); transition: border-radius .4s, scale .3s; }
+.node:hover .bubble { border-radius: 50%; scale: 1.08; }
+.bubble .ms { font-size: 42px; }
+.node small { min-height: 1.4em; font-size: 14px; color: var(--muted); }
+.node small a { color: var(--accent); font-weight: 600; }
+.pipe { flex: 1; height: 6px; margin-top: 45px; border-radius: 3px; opacity: .55; background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 20px); animation: flow .8s linear infinite; }
+@keyframes flow { to { background-position: 20px 0; } }
+
+/* 4: deps */
+.code { margin-top: 28px; padding: 8px 8px 18px; border-radius: var(--radius); background: #1E1B2E; box-shadow: 0 20px 40px -20px color-mix(in oklab, var(--accent) 70%, transparent); }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 8px 12px; }
+.tabs .chip { background: transparent; color: #CAC4D0; border-color: #49454F; font-family: 'Roboto Mono', monospace; }
+.tabs .chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.dep { display: flex; align-items: center; gap: 14px; padding: 9px 20px; font: 15px 'Roboto Mono', monospace; }
+.dep code { flex: 1; min-width: 0; color: #E6E1F9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dep .ms { color: var(--accent); }
+.dep .chip { background: color-mix(in oklab, var(--accent) 28%, #1E1B2E); border-color: transparent; color: #fff; }
+.slide.active .dep { animation: rise .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 70ms); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; }
+
+/* 5: link grid */
+.link-card { display: flex; align-items: flex-start; gap: 14px; padding: 20px; }
+.link-card .icon { flex: none; width: 48px; height: 48px; margin: 0; border-radius: 16px; }
+.link-card b { display: block; font-size: 17px; margin: 2px 0; }
+.link-card .go { position: absolute; top: 16px; right: 16px; font-size: 20px; color: var(--muted); transition: translate .2s, color .2s; }
+.link-card:hover .go { translate: 3px -3px; color: var(--accent); }
+
+/* 6: builder */
+.builder { display: grid; gap: 18px; padding: 28px; margin-top: 24px; }
+.brow { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 12px; }
+.brow > span { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.query { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; }
+.qbox { flex: 1; min-width: 260px; padding: 16px 20px; border-radius: 18px; background: #1C1B1F; color: #E6E1E5; font: 15px/1.6 'Roboto Mono', monospace; }
+.qbox .k { color: color-mix(in oklab, var(--accent) 55%, white); }
+.qbox .v { color: #FFD8E4; }
+
+/* 7: timeline */
+.tl { --lw: 210px; position: relative; display: grid; grid-template-columns: var(--lw) 1fr; align-items: center; row-gap: 12px; padding: 28px; margin-top: 24px; }
+.months { display: grid; grid-template-columns: repeat(12, 1fr); text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); }
+.months .now { color: var(--accent); }
+.tl .name { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 15px; text-decoration: none; }
+.tl .name:hover { color: var(--accent); }
+.tl .name .ms { font-size: 16px; opacity: .5; }
+.track { position: relative; height: 28px; background: linear-gradient(90deg, transparent calc(100% - 1px), var(--outline) 0) 0 0 / calc(100% / 12) 100%; }
+.bar { position: absolute; top: 4px; bottom: 4px; border-radius: 99px; background: var(--c); transform-origin: left; scale: 0 1; }
+.bar.faint { opacity: .35; }
+.slide.active .bar { animation: grow .8s cubic-bezier(.2,.8,.2,1) calc(var(--i) * 80ms + 300ms) forwards; }
+.slide.active .bar.live { animation: grow .8s cubic-bezier(.2,.8,.2,1) calc(var(--i) * 80ms + 300ms) forwards, glow 1.6s 1.6s infinite; }
+@keyframes grow { to { scale: 1 1; } }
+@keyframes glow { from { box-shadow: 0 0 0 0 var(--c); } to { box-shadow: 0 0 0 10px transparent; } }
+.nowline { position: absolute; top: 52px; bottom: 24px; width: 2px; border-radius: 2px; background: var(--accent); left: calc(28px + var(--lw) + (100% - 56px - var(--lw)) * var(--m)); }
+
+/* 8: health */
+.health { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; margin-top: 24px; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.check { position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 20px; border: 1.5px solid var(--outline); background: var(--surface); color: var(--on); font: 600 15px 'Roboto Flex', sans-serif; text-align: left; cursor: pointer; transition: background .2s, border-color .2s; }
+.check .ms { color: var(--muted); transition: color .2s; }
+.check[aria-pressed=true] { border-color: var(--ok); background: color-mix(in oklab, var(--ok) 10%, white); }
+.check[aria-pressed=true] .ms { color: var(--ok); }
+.gauge-wrap { position: relative; width: 240px; margin: auto; }
+.gauge { width: 100%; rotate: -90deg; display: block; }
+.gauge circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+.g-bg { stroke: var(--outline); }
+.g-val { stroke: var(--g, #D93025); stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1), stroke .3s; }
+.g-text { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.g-text b { font-size: 48px; font-weight: 800; color: var(--g, #D93025); transition: color .3s; }
+.g-text span { display: flex; align-items: center; gap: 4px; font-weight: 700; color: var(--muted); }
+
+/* 9: PR */
+.pr { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; margin-top: 20px; }
+.mermaid { font-family: inherit; background: none; text-align: center; }
+.mermaid:not([data-processed]) { visibility: hidden; }
+.mermaid svg { max-width: 100%; height: auto; }
+.term { min-height: 120px; margin-top: 16px; padding: 20px; border-radius: 20px; background: #1C1B1F; color: #E6E1E5; font: 15px/1.6 'Roboto Mono', monospace; white-space: pre-wrap; }
+.term::after { content: '▋'; color: var(--accent); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* 10: end */
+.end { display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: center; margin-top: 28px; }
+.stack { display: grid; gap: 12px; }
+.qr-card { padding: 22px; text-align: center; border-radius: 36px; background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 18%, white), color-mix(in oklab, #E91E63 14%, white)); }
+#qr { width: 230px; height: 230px; padding: 14px; margin: auto; border-radius: 22px; background: #fff; }
+#qr img, #qr canvas { width: 100%; height: auto; }
+.qr-card a { display: block; margin-top: 14px; font-weight: 700; color: var(--accent); text-decoration: none; }
+
+@media (max-width: 900px) {
+  .two, .health, .pr, .end { grid-template-columns: 1fr; }
+  .g3, .g4 { grid-template-columns: 1fr 1fr; }
+  .hero { display: none; }
+  .slide { place-items: start center; }
+  .flow { flex-direction: column; align-items: center; }
+  .pipe { flex: none; width: 6px; height: 28px; margin: 0; background: repeating-linear-gradient(180deg, var(--accent) 0 8px, transparent 8px 14px); animation: none; }
+}
+@media (max-width: 560px) {
+  .g3, .g4, .checks { grid-template-columns: 1fr; }
+  .brow { grid-template-columns: 1fr; }
+  .tl { --lw: 100px; padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div>
+<div class="progress"><span></span></div>
+<div class="brand"><span class="ms">coffee</span>Codess.cafe</div>
+<nav class="ctrl">
+  <button class="fab" id="prev" aria-label="Previous slide"><span class="ms">arrow_back</span></button>
+  <span id="count">01 / 10</span>
+  <button class="fab" id="next" aria-label="Next slide"><span class="ms">arrow_forward</span></button>
+</nav>
+
+<main class="deck">
+
+<!-- 1 -->
+<section class="slide" style="--accent:#6750A4">
+  <div class="inner two">
+    <div>
+      <span class="kicker" data-anim><span class="ms">code_blocks</span>Open Source 101</span>
+      <h1 data-anim>Find your first <span class="grad">open source</span> project</h1>
+      <p class="lead" data-anim style="margin-top:20px">From “where do I even start?” to a merged PR.</p>
+      <div class="byline" data-anim>
+        <div class="avatar">AD</div>
+        <div><b>Akshita Dixit</b><br><a href="https://akshitadixit.github.io/">akshitadixit.github.io</a></div>
+      </div>
+      <p class="hint" data-anim><kbd>←</kbd><kbd>→</kbd> navigate &nbsp;·&nbsp; <kbd>F</kbd> fullscreen</p>
+    </div>
+    <svg class="hero" viewBox="0 0 420 320" aria-hidden="true">
+      <path pathLength="1" d="M20 160 H400" style="stroke:var(--accent);--d:0s"/>
+      <path pathLength="1" d="M90 160 C130 160 130 70 170 70 H290 C330 70 330 160 370 160" style="stroke:#E91E63;--d:.5s"/>
+      <path pathLength="1" d="M150 160 C185 160 185 250 220 250 H260 C295 250 295 160 330 160" style="stroke:#00897B;--d:.7s"/>
+      <circle cx="20" cy="160" r="9" style="stroke:var(--accent);--d:.1s"/>
+      <circle cx="90" cy="160" r="9" style="stroke:var(--accent);--d:.3s"/>
+      <circle cx="150" cy="160" r="9" style="stroke:var(--accent);--d:.45s"/>
+      <circle cx="170" cy="70" r="9" style="stroke:#E91E63;--d:.75s"/>
+      <circle cx="230" cy="70" r="9" style="stroke:#E91E63;--d:.9s"/>
+      <circle cx="290" cy="70" r="9" style="stroke:#E91E63;--d:1.05s"/>
+      <circle cx="220" cy="250" r="9" style="stroke:#00897B;--d:.95s"/>
+      <circle cx="260" cy="250" r="9" style="stroke:#00897B;--d:1.1s"/>
+      <circle cx="330" cy="160" r="9" style="stroke:var(--accent);--d:1.3s"/>
+      <circle class="ring" cx="370" cy="160" r="11" style="--d:1.6s"/>
+      <circle class="end" cx="370" cy="160" r="11" style="stroke:var(--accent);--d:1.6s"/>
+      <text x="230" y="44" text-anchor="middle" style="fill:#E91E63;--d:1.1s">your-fix</text>
+      <text x="240" y="285" text-anchor="middle" style="fill:#00897B;--d:1.2s">docs-typo</text>
+      <text x="370" y="200" text-anchor="middle" style="fill:var(--accent);--d:1.8s">merged!</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" style="--accent:#0B57D0">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">favorite</span>Why bother?</span>
+    <h2 data-anim>Four reasons to start</h2>
+    <div class="grid g4" style="margin-top:32px">
+      <div class="card lift" data-anim style="--accent:#0B57D0"><div class="icon"><span class="ms">school</span></div><h3>Learn</h3><p>Real code. Real reviews.</p></div>
+      <div class="card lift" data-anim style="--accent:#E91E63"><div class="icon"><span class="ms">diversity_3</span></div><h3>Network</h3><p>Meet maintainers worldwide.</p></div>
+      <div class="card lift" data-anim style="--accent:#E8710A"><div class="icon"><span class="ms">work</span></div><h3>Portfolio</h3><p>Public proof of skill.</p></div>
+      <div class="card lift" data-anim style="--accent:#1E8E3E"><div class="icon"><span class="ms">volunteer_activism</span></div><h3>Give back</h3><p>Fix the tools you use.</p></div>
+    </div>
+    <p class="foot" data-anim>Read more: <a href="https://opensource.guide/how-to-contribute/">opensource.guide/how-to-contribute</a></p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide" style="--accent:#00897B">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">filter_alt</span>The mental model</span>
+    <h2 data-anim>Narrow it down. Don’t boil the ocean.</h2>
+    <div class="chips" id="funnel-tabs" data-anim style="margin-top:20px"></div>
+    <div class="flow">
+      <div class="node" data-anim style="--accent:#00897B"><div class="bubble"><span class="ms">apps</span></div><b>You use</b><small id="f0"></small></div>
+      <div class="pipe"></div>
+      <div class="node" data-anim style="--accent:#0B57D0"><div class="bubble"><span class="ms">code</span></div><b>You know</b><small id="f1"></small></div>
+      <div class="pipe"></div>
+      <div class="node" data-anim style="--accent:#6750A4"><div class="bubble"><span class="ms">hub</span></div><b>Project</b><small id="f2"></small></div>
+      <div class="pipe"></div>
+      <div class="node" data-anim style="--accent:#E8710A"><div class="bubble"><span class="ms">label</span></div><b>Issue</b><small id="f3"></small></div>
+      <div class="pipe"></div>
+      <div class="node" data-anim style="--accent:#1E8E3E"><div class="bubble"><span class="ms">merge</span></div><b>Your PR</b><small>merged!</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide" style="--accent:#E8710A">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">inventory_2</span>Start with what you use</span>
+    <h2 data-anim>Your dependency file is a map</h2>
+    <p class="lead" data-anim>Every line is a project that needs help.</p>
+    <div class="code" data-anim>
+      <div class="tabs" id="dep-tabs"></div>
+      <div id="deps"></div>
+    </div>
+    <div class="row" data-anim><span class="muted">Or apps you love →</span><span class="chips" id="apps"></span></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" style="--accent:#C2185B">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">travel_explore</span>Issue finders</span>
+    <h2 data-anim>Let the internet do the searching</h2>
+    <div class="grid g3" id="finders" style="margin-top:28px"></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" style="--accent:#1E8E3E">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">search</span>Try it live</span>
+    <h2 data-anim>GitHub search is your superpower</h2>
+    <div class="card builder" data-anim>
+      <div class="brow"><span>Language</span><div class="chips" id="q-lang"></div></div>
+      <div class="brow"><span>Label</span><div class="chips" id="q-label"></div></div>
+      <div class="brow"><span>Filters</span><div class="chips" id="q-filter"></div></div>
+      <div class="query">
+        <div class="qbox" id="qbox"></div>
+        <a class="btn" id="q-go" href="https://github.com/search"><span class="ms">open_in_new</span>Search GitHub</a>
+      </div>
+    </div>
+    <p class="foot" data-anim>Tip: sort by newest and be the first to comment. Docs: <a href="https://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests">searching issues</a></p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" style="--accent:#7B1FA2">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">event</span>Mentorship programs</span>
+    <h2 data-anim>Mentored, structured, sometimes paid</h2>
+    <div class="card tl" id="timeline" data-anim></div>
+    <p class="foot" data-anim>Months are approximate. Check each site for exact dates.</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" style="--accent:#D93025">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">health_and_safety</span>Health check</span>
+    <h2 data-anim>Is the project alive and friendly?</h2>
+    <div class="health">
+      <div class="checks" id="checks" data-anim></div>
+      <div class="gauge-wrap" data-anim="pop">
+        <svg class="gauge" viewBox="0 0 120 120"><circle class="g-bg" cx="60" cy="60" r="50"/><circle class="g-val" id="g-val" cx="60" cy="60" r="50" pathLength="100"/></svg>
+        <div class="g-text"><b id="g-score">0/6</b><span id="g-verdict"></span></div>
+      </div>
+    </div>
+    <div class="row" data-anim>
+      <span class="muted">Check with →</span>
+      <span class="chips">
+        <a class="chip" href="https://github.com/facebook/docusaurus/community"><span class="ms">checklist</span>GitHub Community Standards</a>
+        <a class="chip" href="https://ossinsight.io/">OSS Insight</a>
+        <a class="chip" href="https://scorecard.dev/">OpenSSF Scorecard</a>
+        <a class="chip" href="https://chaoss.community/">CHAOSS</a>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide" style="--accent:#3949AB">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">merge</span>Your first PR</span>
+    <h2 data-anim>Seven steps to merged</h2>
+    <div class="pr">
+      <div class="card" data-anim>
+<pre class="mermaid">
+gitGraph
+  commit id: "upstream"
+  commit id: "issue-42"
+  branch fix-issue-42
+  checkout fix-issue-42
+  commit id: "fix"
+  commit id: "test"
+  checkout main
+  commit id: "other-pr"
+  checkout fix-issue-42
+  commit id: "review"
+  checkout main
+  merge fix-issue-42 id: "merged" type: HIGHLIGHT
+</pre>
+      </div>
+      <div data-anim>
+        <div class="chips" id="steps"></div>
+        <div class="term" id="term"></div>
+        <p class="foot">Practice: <a href="https://github.com/firstcontributions/first-contributions">first-contributions</a> · <a href="https://docs.github.com/en/pull-requests">GitHub PR docs</a> · <a href="https://cli.github.com/">gh CLI</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" style="--accent:#6750A4">
+  <div class="inner">
+    <span class="kicker" data-anim><span class="ms">rocket_launch</span>Your move</span>
+    <h2 data-anim>Go ship your <span class="grad">first PR</span></h2>
+    <div class="end">
+      <div class="stack" data-anim>
+        <b class="muted">This week</b>
+        <button class="check" aria-pressed="false"><span class="ms">star</span>Star 3 repos you use</button>
+        <button class="check" aria-pressed="false"><span class="ms">chat</span>Comment on 1 issue</button>
+        <button class="check" aria-pressed="false"><span class="ms">merge</span>Open 1 PR</button>
+      </div>
+      <div class="card qr-card" data-anim="pop">
+        <div id="qr"></div>
+        <a href="https://akshitadixit.github.io/">akshitadixit.github.io</a>
+        <small>Akshita Dixit · Codess.cafe</small>
+      </div>
+      <div class="stack" data-anim>
+        <b class="muted">Cheat sheet</b>
+        <div class="chips">
+          <a class="chip" href="https://goodfirstissue.dev/">goodfirstissue.dev</a>
+          <a class="chip" href="https://hacktoberfest.com/">hacktoberfest.com</a>
+          <a class="chip" href="https://summerofcode.withgoogle.com/">GSoC</a>
+          <a class="chip" href="https://www.outreachy.org/">Outreachy</a>
+          <a class="chip" href="https://github.com/firstcontributions/first-contributions">first-contributions</a>
+          <a class="chip" href="https://opensource.guide/">opensource.guide</a>
+          <a class="chip" href="https://github.com/MunGell/awesome-for-beginners">awesome-for-beginners</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const h = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === 'text' ? e.textContent = v : e.setAttribute(k, v);
+  e.append(...kids);
+  return e;
+};
+const icon = name => h('span', { class: 'ms', text: name });
+const link = (href, text, cls = 'chip') => h('a', { class: cls, href, text });
+
+// Single-select chip group
+function chipGroup(box, items, initial, onPick) {
+  items.forEach(it => {
+    const b = h('button', { class: 'chip', 'aria-pressed': it === initial, text: it });
+    b.onclick = () => { box.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b)); onPick(it); };
+    box.append(b);
+  });
+  onPick(initial);
+}
+
+// 3: funnel examples
+const gh = 'https://github.com/';
+const funnel = {
+  Web: ['VS Code', 'TypeScript', 'microsoft/vscode', ['help wanted', gh + 'microsoft/vscode/labels/help%20wanted']],
+  Android: ['Now in Android', 'Kotlin', 'android/nowinandroid', ['open issues', gh + 'android/nowinandroid/issues']],
+  iOS: ['Alamofire', 'Swift', 'Alamofire/Alamofire', ['open issues', gh + 'Alamofire/Alamofire/issues']],
+  Python: ['pandas', 'Python', 'pandas-dev/pandas', ['good first issue', gh + 'pandas-dev/pandas/labels/good%20first%20issue']],
+};
+chipGroup($('#funnel-tabs'), Object.keys(funnel), 'Web', k => {
+  const [use, lang, repo, [label, url]] = funnel[k];
+  $('#f0').textContent = use;
+  $('#f1').textContent = lang;
+  $('#f2').replaceChildren(link(gh + repo, repo, ''));
+  $('#f3').replaceChildren(link(url, label, ''));
+});
+
+// 4: dependency files
+const deps = {
+  'package.json': [['"react": "^19"', 'facebook/react'], ['"next": "^15"', 'vercel/next.js'], ['"vite": "^7"', 'vitejs/vite'], ['"axios": "^1"', 'axios/axios']],
+  'build.gradle.kts': [['implementation("io.coil-kt.coil3:coil-compose")', 'coil-kt/coil'], ['implementation("com.squareup.retrofit2:retrofit")', 'square/retrofit'], ['implementation("com.squareup.okhttp3:okhttp")', 'square/okhttp'], ['implementation("io.insert-koin:koin-android")', 'InsertKoinIO/koin']],
+  'Podfile': [["pod 'Alamofire'", 'Alamofire/Alamofire'], ["pod 'Kingfisher'", 'onevcat/Kingfisher'], ["pod 'SnapKit'", 'SnapKit/SnapKit'], ["pod 'lottie-ios'", 'airbnb/lottie-ios']],
+  'requirements.txt': [['requests', 'psf/requests'], ['fastapi', 'fastapi/fastapi'], ['pandas', 'pandas-dev/pandas'], ['flask', 'pallets/flask']],
+};
+chipGroup($('#dep-tabs'), Object.keys(deps), 'package.json', f => {
+  $('#deps').replaceChildren(...deps[f].map(([code, repo], i) =>
+    h('div', { class: 'dep', style: `--i:${i}` }, h('code', { text: code }), icon('arrow_forward'), link(gh + repo, repo))));
+});
+$('#apps').append(...['microsoft/vscode', 'excalidraw/excalidraw', 'oppia/oppia', 'freeCodeCamp/freeCodeCamp', 'wikimedia/apps-android-wikipedia', 'mozilla-mobile/firefox-ios']
+  .map(r => link(gh + r, r)));
+
+// 5: issue finders
+const finders = [
+  ['goodfirstissue.dev', 'https://goodfirstissue.dev/', 'Curated beginner issues', 'auto_awesome', '#C2185B'],
+  ['goodfirstissues.com', 'https://goodfirstissues.com/', 'Filter by language', 'filter_alt', '#0B57D0'],
+  ['up-for-grabs.net', 'https://up-for-grabs.net/', 'Projects asking for help', 'front_hand', '#E8710A'],
+  ['firsttimersonly.com', 'https://www.firsttimersonly.com/', 'Made for first-timers', 'waving_hand', '#00897B'],
+  ['codetriage.com', 'https://www.codetriage.com/', 'Issues in your inbox', 'mail', '#6750A4'],
+  ['For Good First Issue', 'https://forgoodfirstissue.github.com/', 'Social-good projects', 'public', '#1E8E3E'],
+  ['#good-first-issue', gh + 'topics/good-first-issue', 'GitHub topic page', 'tag', '#3949AB'],
+  ['awesome-for-beginners', gh + 'MunGell/awesome-for-beginners', 'Beginner-friendly repos', 'star', '#F9AB00'],
+  ['first-contributions', gh + 'firstcontributions/first-contributions', 'Practice your 1st PR', 'school', '#D93025'],
+];
+$('#finders').append(...finders.map(([name, href, desc, ic, color]) =>
+  h('a', { class: 'card link-card', href, 'data-anim': '', style: `--accent:${color}` },
+    h('div', { class: 'icon' }, icon(ic)),
+    h('div', {}, h('b', { text: name }), h('small', { text: desc })),
+    h('span', { class: 'ms go', text: 'north_east' }))));
+
+// 6: search builder
+const q = { lang: 'Python', label: 'good first issue', f: new Set(['no:assignee', 'recent', 'archived:false']) };
+function renderQuery() {
+  const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const parts = [['is', 'issue'], ['is', 'open'], ['label', `"${q.label}"`]];
+  if (q.lang !== 'Any') parts.push(['language', q.lang.toLowerCase()]);
+  if (q.f.has('no:assignee')) parts.push(['no', 'assignee']);
+  if (q.f.has('recent')) parts.push(['updated', '>' + since]);
+  if (q.f.has('archived:false')) parts.push(['archived', 'false']);
+  $('#qbox').replaceChildren(...parts.flatMap(([k, v]) => [h('span', { class: 'k', text: k + ':' }), h('span', { class: 'v', text: v }), ' ']));
+  $('#q-go').href = 'https://github.com/search?type=issues&s=created&o=desc&q=' + encodeURIComponent(parts.map(([k, v]) => `${k}:${v}`).join(' '));
+}
+chipGroup($('#q-lang'), ['Any', 'Python', 'JavaScript', 'TypeScript', 'Kotlin', 'Swift', 'Go', 'Rust', 'Java', 'Dart'], q.lang, v => { q.lang = v; renderQuery(); });
+chipGroup($('#q-label'), ['good first issue', 'help wanted', 'documentation', 'first-timers-only'], q.label, v => { q.label = v; renderQuery(); });
+[['no:assignee', 'Unassigned'], ['recent', 'Updated < 30 days'], ['archived:false', 'Not archived']].forEach(([key, text]) => {
+  const b = h('button', { class: 'chip', 'aria-pressed': q.f.has(key), text });
+  b.onclick = () => { q.f.has(key) ? q.f.delete(key) : q.f.add(key); b.setAttribute('aria-pressed', q.f.has(key)); renderQuery(); };
+  $('#q-filter').append(b);
+});
+renderQuery();
+
+// 7: programs timeline
+const programs = [
+  ['Hacktoberfest', 'https://hacktoberfest.com/', [[10, 10]], '#E8710A'],
+  ['Google Summer of Code', 'https://summerofcode.withgoogle.com/', [[3, 9]], '#1E8E3E'],
+  ['Outreachy', 'https://www.outreachy.org/', [[1, 3], [5, 8], [12, 12]], '#C2185B'],
+  ['LFX Mentorship', 'https://mentorship.lfx.linuxfoundation.org/', [[3, 11]], '#0B57D0'],
+  ['GSSoC', 'https://gssoc.girlscript.tech/', [[5, 8]], '#F9AB00'],
+  ['MLH Fellowship', 'https://fellowship.mlh.io/', [[1, 12]], '#7B1FA2', 'rolling'],
+  ['Season of KDE', 'https://season.kde.org/', [[1, 3]], '#00897B'],
+];
+const month = new Date().getMonth() + 1;
+const tl = $('#timeline');
+tl.style.setProperty('--m', (month - .5) / 12);
+tl.append(h('span'), h('div', { class: 'months' }, ...'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')
+  .map((m, i) => h('span', { class: i + 1 === month ? 'now' : '', text: m }))));
+programs.forEach(([name, url, segs, c, note], i) => {
+  const track = h('div', { class: 'track' });
+  segs.forEach(([a, b]) => {
+    const live = !note && month >= a && month <= b;
+    const bar = h('div', { class: 'bar' + (note ? ' faint' : '') + (live ? ' live' : ''), style: `--c:${c};--i:${i};left:${(a - 1) / 12 * 100}%;width:${(b - a + 1) / 12 * 100}%` });
+    track.append(bar);
+  });
+  tl.append(h('a', { class: 'name', href: url }, name, icon('north_east')), track);
+});
+tl.append(h('div', { class: 'nowline' }));
+
+// 8: health check
+const checks = [['update', 'Commit in last 30 days'], ['description', 'CONTRIBUTING.md'], ['handshake', 'Code of Conduct'], ['gavel', 'OSI license'], ['forum', 'Replies within a week'], ['label', 'Labelled issues']];
+const verdicts = [[2, '#D93025', 'block', 'Skip'], [4, '#F9AB00', 'help', 'Maybe'], [6, '#1E8E3E', 'rocket_launch', 'Go!']];
+function scoreHealth() {
+  const n = $('#checks').querySelectorAll('[aria-pressed=true]').length;
+  const [, color, ic, text] = verdicts.find(([max]) => n <= max);
+  const wrap = $('.gauge-wrap');
+  wrap.style.setProperty('--g', color);
+  $('#g-val').style.strokeDashoffset = 100 - n / checks.length * 100;
+  $('#g-score').textContent = `${n}/${checks.length}`;
+  $('#g-verdict').replaceChildren(icon(ic), text);
+}
+checks.forEach(([ic, text]) => $('#checks').append(h('button', { class: 'check', 'aria-pressed': false }, icon(ic), text)));
+document.addEventListener('click', e => {
+  const b = e.target.closest('.check');
+  if (!b) return;
+  b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
+  if (b.closest('#checks')) scoreHealth();
+});
+scoreHealth();
+
+// 9: PR steps
+const steps = [
+  ['chat', 'Claim', '# on the issue:\n"Hi! I’d like to work on this. Can I take it?"'],
+  ['fork_right', 'Fork', '$ gh repo fork owner/repo --clone'],
+  ['alt_route', 'Branch', '$ git switch -c fix-issue-42'],
+  ['edit', 'Commit', '$ git commit -m "fix: handle empty input (#42)"'],
+  ['upload', 'Push', '$ git push -u origin fix-issue-42'],
+  ['merge', 'PR', '$ gh pr create --fill\n# link it: "Closes #42"'],
+  ['rate_review', 'Iterate', '$ git commit -am "address review"\n$ git push'],
+];
+let typer;
+function typeOut(text) {
+  clearInterval(typer);
+  if (reduce) { $('#term').textContent = text; return; }
+  let i = 0;
+  typer = setInterval(() => { $('#term').textContent = text.slice(0, ++i); if (i >= text.length) clearInterval(typer); }, 22);
+}
+const stepNames = steps.map(([, name], i) => `${i + 1}. ${name}`);
+chipGroup($('#steps'), stepNames, stepNames[0], s => typeOut(steps[stepNames.indexOf(s)][2]));
+
+// 10: QR
+if (window.QRCode) new QRCode($('#qr'), { text: 'https://akshitadixit.github.io/', width: 400, height: 400, colorDark: '#2E1F6B', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+
+// External links open in a new tab without leaking window.opener
+document.querySelectorAll('a[href^="http"]').forEach(a => { a.target = '_blank'; a.rel = 'noopener noreferrer'; });
+
+// Deck engine
+const slides = [...document.querySelectorAll('.slide')];
+slides.forEach(s => s.querySelectorAll('[data-anim]').forEach((el, i) => el.style.setProperty('--i', i)));
+let cur = 0;
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  slides[cur].classList.remove('active');
+  cur = n;
+  slides[cur].classList.add('active');
+  document.documentElement.style.setProperty('--accent', slides[cur].style.getPropertyValue('--accent'));
+  $('.progress span').style.width = (cur + 1) / slides.length * 100 + '%';
+  $('#count').textContent = `${String(cur + 1).padStart(2, '0')} / ${slides.length}`;
+  history.replaceState(null, '', '#' + (cur + 1));
+}
+$('#prev').onclick = () => go(cur - 1);
+$('#next').onclick = () => go(cur + 1);
+addEventListener('keydown', e => {
+  if ((e.key === ' ' || e.key === 'Enter') && e.target.closest('button, a')) return;
+  if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key.toLowerCase() === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+});
+let x0 = null;
+addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - x0;
+  if (x0 !== null && Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
+  x0 = null;
+});
+addEventListener('hashchange', () => go((parseInt(location.hash.slice(1)) || 1) - 1));
+document.addEventListener('pointerdown', e => {
+  const t = e.target.closest('.chip, .btn, .card, .fab, .check');
+  if (!t) return;
+  const r = t.getBoundingClientRect(), d = Math.max(r.width, r.height);
+  const s = h('span', { class: 'ripple', style: `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px` });
+  t.append(s);
+  s.addEventListener('animationend', () => s.remove());
+});
+go((parseInt(location.hash.slice(1)) || 1) - 1);
+</script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+  startOnLoad: false, theme: 'base',
+  themeVariables: {
+    fontFamily: 'Roboto Flex, sans-serif', git0: '#3949AB', git1: '#E91E63',
+    gitBranchLabel0: '#fff', gitBranchLabel1: '#fff', commitLabelColor: '#1C1B1F', commitLabelBackground: '#E8EAF6',
+  },
+});
+await mermaid.run({ querySelector: '.mermaid' });
+</script>
+</body>
+</html>
